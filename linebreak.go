@@ -8,7 +8,7 @@ import "strings"
 // A. Aggarwal, T. Tokuyama. Consecutive interval query and dynamic programming on intervals. Discrete Applied Mathematics 85, 1998.
 
 // Wrap formats text at the given width in linear time
-func Wrap(text string, width int) string {
+func Wrap(text string, width, maxwidth int) string {
 	words := strings.Fields(text)
 	count := len(words)
 	offsets := []int{0}
@@ -25,12 +25,15 @@ func Wrap(text string, width int) string {
 	// closes over offsets, minima
 	cost := func(i, j int) int {
 		w := offsets[j] - offsets[i] + j - i - 1
-		if w > width {
-			c := 10000000000 * (w - width)
-			return c
+		if w > maxwidth {
+			return 10000000000 * (w - width)
 		}
-		c := minima[i] + (width-w)*(width-w)
-		return c
+		d := abs(width - w)
+		// last line has smaller extra space penalty
+		if j == count {
+			return minima[i] + d*d
+		}
+		return minima[i] + d*d*d
 	}
 
 	var smawk func([]int, []int)
@@ -155,4 +158,11 @@ func min(a, b int) int {
 		return a
 	}
 	return b
+}
+
+func abs(a int) int {
+	if a < 0 {
+		return -a
+	}
+	return a
 }

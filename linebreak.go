@@ -88,14 +88,18 @@ func Wrap(text string, width, maxwidth int) string {
 	n := count + 1
 	i := 0
 	offset := 0
+	var r1 []int
+	var r2 []int
 	for {
 		r := min(n, 1<<uint(i+1))
 		edge := (1 << uint(i)) + offset
-		smawk(genrange(0+offset, edge), genrange(edge, r+offset))
+		r1 = genrange(r1, 0+offset, edge)
+		r2 = genrange(r2, edge, r+offset)
+		smawk(r1, r2)
 		x := minima[r-1+offset]
 		// because python code has 'for ... else'
 		var terminatedFor bool
-		for _, j := range genrange(1<<uint(i), r-1) {
+		for j := 1 << uint(i); j < r-1; j++ {
 			y := cost(j+offset, r-1+offset)
 			if y <= x {
 				n -= j
@@ -136,8 +140,7 @@ func peek(s []int) int          { return s[len(s)-1] }
 
 // python list[a::b]
 func step(ints []int, step int) []int {
-	var r []int
-
+	r := make([]int, 0, 1+(len(ints)/step))
 	for i := 0; i < len(ints); i += step {
 		r = append(r, ints[i])
 	}
@@ -145,8 +148,13 @@ func step(ints []int, step int) []int {
 }
 
 // python range(a,b)
-func genrange(start, stop int) []int {
-	var r []int
+func genrange(r []int, start, stop int) []int {
+	if r != nil {
+		r = r[:0]
+	}
+	if stop <= start {
+		return r
+	}
 	for i := start; i < stop; i++ {
 		r = append(r, i)
 	}

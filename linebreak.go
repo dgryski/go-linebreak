@@ -133,6 +133,33 @@ func Wrap(text string, width, maxwidth int) string {
 	return strings.Join(lines, "\n")
 }
 
+// Greedy formats text at the given width greedily
+func Greedy(text string, width, maxwidth int) string {
+	words := strings.Fields(text)
+
+	var lines []string
+	var prev int
+	var total int
+	for i, w := range words {
+		d := total + 1 + len(w)
+
+		// if adding w pushes us over our maxwidth
+		// OR
+		// d is further from our goal than total is,
+		// then we're done this block
+		if d > maxwidth || abs(width-d) > abs(width-total) {
+			lines = append(lines, strings.Join(words[prev:i], " "))
+			prev = i
+			total = -1
+		}
+
+		total += len(w) + 1
+	}
+	lines = append(lines, strings.Join(words[prev:], " "))
+
+	return strings.Join(lines, "\n")
+}
+
 // trivial int stack
 func push(s []int, i int) []int { return append(s, i) }
 func pop(s []int) []int         { return s[:len(s)-1] }

@@ -18,7 +18,7 @@ func Wrap(text string, width, maxwidth int) string {
 
 	minima := make([]int, count+1)
 	for i := 1; i < len(minima); i++ {
-		minima[i] = 1000000000000000000
+		minima[i] = 1 << 30
 	}
 	breaks := make([]int, count+1)
 
@@ -26,7 +26,7 @@ func Wrap(text string, width, maxwidth int) string {
 	cost := func(i, j int) int {
 		w := offsets[j] - offsets[i] + j - i - 1
 		if w > maxwidth {
-			return 10000000000 * (w - width)
+			return (1 << 30) * (w - width)
 		}
 		d := abs(width - w)
 		// last line has smaller extra space penalty

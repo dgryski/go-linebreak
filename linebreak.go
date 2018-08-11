@@ -16,24 +16,24 @@ func Wrap(text string, width, maxwidth int) string {
 		offsets = append(offsets, offsets[i]+len(w))
 	}
 
-	minima := make([]int, count+1)
+	minima := make([]int64, count+1)
 	for i := 1; i < len(minima); i++ {
 		minima[i] = 1000000000000000000
 	}
 	breaks := make([]int, count+1)
 
 	// closes over offsets, minima
-	cost := func(i, j int) int {
+	cost := func(i, j int) int64 {
 		w := offsets[j] - offsets[i] + j - i - 1
 		if w > maxwidth {
-			return 10000000000 * (w - width)
+			return 10000000000 * int64(w-width)
 		}
 		d := abs(width - w)
 		// last line has smaller extra space penalty
 		if j == count {
-			return minima[i] + d*d
+			return minima[i] + int64(d*d)
 		}
-		return minima[i] + d*d*d
+		return minima[i] + int64(d*d*d)
 	}
 
 	var smawk func([]int, []int)
